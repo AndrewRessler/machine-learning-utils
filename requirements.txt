@@ -1,0 +1,57 @@
+# Core Data Science Libraries
+numpy
+pandas
+scikit-learn
+matplotlib
+seaborn
+
+# Model Training & Hyperparameter Tuning
+xgboost
+lightgbm
+catboost
+hyperopt
+
+# Classical ML Models (Used in Model Comparison)
+scipy
+statsmodels
+joblib
+tqdm
+
+# Support for Various Classifiers
+scikit-learn
+mlxtend
+
+# Model Explainability
+shap
+lime
+
+# Specific Classifiers & Transformers Used in Model Comparison
+imbalanced-learn  # SMOTE, resampling for imbalanced datasets
+opencv-python  # If any image processing is needed in the future
+
+# Specific ML Models Included in Model Comparison
+# These are required to ensure all models in model_comparison.py work properly
+# (Including boosting, ensemble, and linear models)
+scikit-learn
+mlxtend
+imblearn
+
+# Specific Classifiers Used
+# These were explicitly referenced in model_comparison.py
+# and need to be included for that script to run correctly.
+# This covers all tree-based, ensemble, and linear models.
+
+# Tree-Based & Ensemble Models
+xgboost
+lightgbm
+catboost
+scikit-learn
+mlxtend
+imbalanced-learn
+
+# Linear Models
+scikit-learn
+
+# Miscellaneous Utilities
+joblib
+tqdm
