@@ -5,8 +5,19 @@ from sklearn.mixture import GaussianMixture
 from sklearn.metrics import silhouette_score
 from sklearn.neighbors import NearestNeighbors
 
+def select_kmeans_k(data: np.ndarray, k_range=(2, 11), plot=True, random_state=42) -> int:
+    """
+    Determine the optimal number of clusters for KMeans using silhouette score.
 
-def select_kmeans_k(data, k_range=(2, 11), plot=True, random_state=42):
+    Args:
+        data: 2D array-like data for clustering.
+        k_range: Range of cluster counts to evaluate.
+        plot: Whether to plot silhouette scores.
+        random_state: Seed for reproducibility.
+
+    Returns:
+        Optimal number of clusters (int).
+    """
     silhouette_scores = []
     for k in range(*k_range):
         kmeans = KMeans(n_clusters=k, random_state=random_state).fit(data)
@@ -22,8 +33,18 @@ def select_kmeans_k(data, k_range=(2, 11), plot=True, random_state=42):
 
     return np.argmax(silhouette_scores) + k_range[0]
 
+def select_agglomerative_k(data: np.ndarray, k_range=(2, 11), plot=True) -> int:
+    """
+    Determine the optimal number of clusters for Agglomerative Clustering using silhouette score.
 
-def select_agglomerative_k(data, k_range=(2, 11), plot=True):
+    Args:
+        data: 2D array-like data for clustering.
+        k_range: Range of cluster counts to evaluate.
+        plot: Whether to plot silhouette scores.
+
+    Returns:
+        Optimal number of clusters (int).
+    """
     silhouette_scores = []
     for k in range(*k_range):
         model = AgglomerativeClustering(n_clusters=k, metric='euclidean', linkage='ward')
@@ -39,8 +60,18 @@ def select_agglomerative_k(data, k_range=(2, 11), plot=True):
 
     return np.argmax(silhouette_scores) + k_range[0]
 
+def estimate_dbscan_eps(data: np.ndarray, min_samples=5, plot=True) -> float:
+    """
+    Estimate the optimal epsilon value for DBSCAN using k-distance graph.
 
-def estimate_dbscan_eps(data, min_samples=5, plot=True):
+    Args:
+        data: 2D array-like data for clustering.
+        min_samples: Minimum samples for DBSCAN.
+        plot: Whether to plot the k-distance graph.
+
+    Returns:
+        Optimal epsilon (float).
+    """
     k = min_samples - 1
     neigh = NearestNeighbors(n_neighbors=k)
     nbrs = neigh.fit(data)
@@ -63,8 +94,19 @@ def estimate_dbscan_eps(data, min_samples=5, plot=True):
 
     return optimal_eps
 
+def select_gmm_n_components(data: np.ndarray, n_range=(1, 11), plot=True, random_state=42) -> dict:
+    """
+    Determine optimal number of components for GMM using AIC and BIC.
 
-def select_gmm_n_components(data, n_range=(1, 11), plot=True, random_state=42):
+    Args:
+        data: 2D array-like data for clustering.
+        n_range: Range of components to evaluate.
+        plot: Whether to plot AIC/BIC.
+        random_state: Seed for reproducibility.
+
+    Returns:
+        Dictionary with best AIC/BIC component count and full score lists.
+    """
     bics, aics = [], []
     for n in range(*n_range):
         gmm = GaussianMixture(n_components=n, random_state=random_state).fit(data)
@@ -87,8 +129,18 @@ def select_gmm_n_components(data, n_range=(1, 11), plot=True, random_state=42):
         'aic_scores': aics
     }
 
+def select_spectral_k(data: np.ndarray, k_range=(2, 11), plot=True) -> int:
+    """
+    Determine optimal number of clusters for Spectral Clustering using silhouette score.
 
-def select_spectral_k(data, k_range=(2, 11), plot=True):
+    Args:
+        data: 2D array-like data for clustering.
+        k_range: Range of cluster counts to evaluate.
+        plot: Whether to plot silhouette scores.
+
+    Returns:
+        Optimal number of clusters (int).
+    """
     silhouette_scores = []
     for k in range(*k_range):
         model = SpectralClustering(n_clusters=k, affinity='nearest_neighbors')
@@ -104,12 +156,31 @@ def select_spectral_k(data, k_range=(2, 11), plot=True):
 
     return np.argmax(silhouette_scores) + k_range[0]
 
+def estimate_meanshift_bandwidth(data: np.ndarray, quantile=0.2) -> float:
+    """
+    Estimate optimal bandwidth for Mean Shift clustering.
 
-def estimate_meanshift_bandwidth(data, quantile=0.2):
+    Args:
+        data: 2D array-like data for clustering.
+        quantile: Quantile used for bandwidth estimation.
+
+    Returns:
+        Estimated bandwidth (float).
+    """
     return estimate_bandwidth(data, quantile=quantile)
 
+def select_birch_k(data: np.ndarray, k_range=(2, 11), plot=True) -> int:
+    """
+    Determine optimal number of clusters for BIRCH using silhouette score.
 
-def select_birch_k(data, k_range=(2, 11), plot=True):
+    Args:
+        data: 2D array-like data for clustering.
+        k_range: Range of cluster counts to evaluate.
+        plot: Whether to plot silhouette scores.
+
+    Returns:
+        Optimal number of clusters (int).
+    """
     silhouette_scores = []
     for k in range(*k_range):
         model = Birch(n_clusters=k)
@@ -125,8 +196,19 @@ def select_birch_k(data, k_range=(2, 11), plot=True):
 
     return np.argmax(silhouette_scores) + k_range[0]
 
+def select_affinity_propagation(data: np.ndarray, preference_values=None, damping=0.9, max_clusters=10) -> float:
+    """
+    Select optimal preference value for Affinity Propagation yielding <= max_clusters.
 
-def select_affinity_propagation(data, preference_values=None, damping=0.9, max_clusters=10):
+    Args:
+        data: 2D array-like data for clustering.
+        preference_values: Sequence of values to try (optional).
+        damping: Damping factor for AffinityPropagation.
+        max_clusters: Maximum desired number of clusters.
+
+    Returns:
+        Preference value (float) producing an acceptable number of clusters.
+    """
     if preference_values is None:
         sim_matrix = -np.linalg.norm(data[:, np.newaxis] - data[np.newaxis, :], axis=2)**2
         preference_values = np.linspace(np.min(sim_matrix), np.median(sim_matrix), 10)
